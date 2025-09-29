@@ -27,7 +27,6 @@ Make sure you have the X11 development libraries installed:
 sudo pacman -S xorg-server xorg-x11-server-utils libx11 libx11-dev
 
 ## On The directory of the project run the following commands:
-```bash```
 gcc -o madaWM madaWM.c -lX11
 
 ## then put this line in ~/.xinitrc file
