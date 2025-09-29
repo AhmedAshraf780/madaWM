@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-#define WORKSPACES 3
+#define WORKSPACES 2
 
 typedef struct Client {
     Window w;
@@ -33,6 +33,7 @@ const char *allowed_classes[] = { "XTerm", "xterm", "Terminal", "URxvt", "urxvt"
 void die(const char *s){ perror(s); exit(1); }
 
 void add_client(Window w) {
+
     Client *c = malloc(sizeof(Client));
     c->w = w; c->next = ws[cur_ws]; ws[cur_ws] = c;
 }
@@ -78,6 +79,10 @@ void arrange() {
     for (c = ws[cur_ws]; c; c = c->next) {
         XMoveResizeWindow(dpy, c->w, i * w, 0, w, screen_h);
         XMapRaised(dpy, c->w);
+	if (i == 0) {
+		XSetInputFocus(dpy, c->w, RevertToPointerRoot, CurrentTime);
+	}
+
         i++;
     }
     XFlush(dpy);
@@ -89,6 +94,10 @@ void focus_next() {
     remove_client_from_ws(first, cur_ws);
     add_client(first);
     arrange();
+    if (ws[cur_ws]) {
+	    XSetInputFocus(dpy, ws[cur_ws]->w, RevertToPointerRoot, CurrentTime);
+    }
+
 }
 
 void focus_prev() {
@@ -102,6 +111,10 @@ void focus_prev() {
     cur->next = *pp;
     *pp = cur;
     arrange();
+    if (ws[cur_ws]) {
+	    XSetInputFocus(dpy, ws[cur_ws]->w, RevertToPointerRoot, CurrentTime);
+    }
+
 }
 
 void change_ws(int idx) {
@@ -111,6 +124,10 @@ void change_ws(int idx) {
     for (c = ws[cur_ws]; c; c = c->next) XUnmapWindow(dpy, c->w);
     cur_ws = idx;
     arrange();
+    if (ws[cur_ws]) {
+	XSetInputFocus(dpy, ws[cur_ws]->w, RevertToPointerRoot, CurrentTime);
+    }
+
 }
 
 void spawn_cmd(const char *cmd) {
@@ -162,7 +179,7 @@ void grab_keys() {
     XGrabKey(dpy, XKeysymToKeycode(dpy, XK_1), mod, root, True, GrabModeAsync, GrabModeAsync);
     XGrabKey(dpy, XKeysymToKeycode(dpy, XK_2), mod, root, True, GrabModeAsync, GrabModeAsync);
     XGrabKey(dpy, XKeysymToKeycode(dpy, XK_3), mod, root, True, GrabModeAsync, GrabModeAsync);
-    XGrabKey(dpy, XKeysymToKeycode(dpy, XK_q), mod, root, True, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy, XKeysymToKeycode(dpy, XK_c), mod, root, True, GrabModeAsync, GrabModeAsync);
     XGrabKey(dpy, XKeysymToKeycode(dpy, XK_h), mod, root, True, GrabModeAsync, GrabModeAsync);
     XGrabKey(dpy, XKeysymToKeycode(dpy, XK_l), mod, root, True, GrabModeAsync, GrabModeAsync);
 }
